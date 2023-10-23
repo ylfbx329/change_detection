@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+from tensorboardX import SummaryWriter
 from thop import profile
 from torchsummary import summary
 
@@ -131,3 +132,5 @@ if __name__ == "__main__":
     summary(model, [(3, 256, 256), (3, 256, 256)])
     flops, params = profile(model, inputs=(A2016, A2019))
     print(flops, params)
+    # with SummaryWriter(log_dir='../logs') as w:
+    #     w.add_graph(model, [A2016, A2019])
