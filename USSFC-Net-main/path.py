@@ -1,3 +1,4 @@
+"""
 # LEVIR-CD
 dataset_levircd = '../data/LEVIR_CD'
 train_root = dataset_levircd + '/train'
@@ -15,6 +16,7 @@ test_src_t1 = test_root + '/A'
 test_src_t2 = test_root + '/B'
 test_label = test_root + '/label'
 test_predict = test_root + '/predict'
+"""
 
 """
 # DSIFN
@@ -36,7 +38,6 @@ test_label = test_root + '/mask'
 test_predict = test_root + '/predict'
 """
 
-"""
 # CDD
 dataset_cdd = r'../data/CDD'
 train_root = dataset_cdd + '/Real/subset/train'
@@ -54,4 +55,3 @@ test_src_t1 = test_root + '/A'
 test_src_t2 = test_root + '/B'
 test_label = test_root + '/OUT'
 test_predict = test_root + '/predict'
-"""

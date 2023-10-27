@@ -10,40 +10,51 @@ from tensorboardX import SummaryWriter
 from torch import optim
 from dataset import RsDataset
 from utils import get_logger
-from networks.USSFCNet import USSFCNet
+from networks import USSFCNet
 
 TITLE = 'USSFCNet_LEVIRCD'
 
+# 创建日志写入器
 writer_train = SummaryWriter('runs/' + TITLE + '/train')
 writer_val = SummaryWriter('runs/' + TITLE + '/val')
 writer_all = SummaryWriter('runs/' + TITLE + '/all')
 
+# 训练设备选择
 print('CUDA: ', torch.cuda.is_available())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# 多设备训练的序号
 device_ids = [0, 1]
 
+# 输入数据变换，转为张量，归一化（output[channel] = (input[channel] - mean[channel]) / std[channel]）
 src_transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5], std=[0.5])
 ])
 
+# 标签数据变换，转为张量，标签数据边缘值为0~255中间的过渡值
 label_transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
 
 def main(args):
+    # 创建模型并发送到设备
     net = USSFCNet(in_ch=3, out_ch=1, ratio=0.5).to(device)
+    # 多GPU训练，但未证实，详见https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html#dataparallel
     # networks = torch.nn.DataParallel(networks, device_ids=device_ids).to(device)
+    # 加载最好的模型继续训练
     # networks.load_state_dict(torch.load('ckps/last.pth', map_location='cuda:0'))
 
+    # 超参记录
     start_epoch = 0
     total_epochs = 200
     best_f1 = 0
     best_epoch = 0
 
+    # 损失函数mean_batch(-w[y * log(x) + (1 - y) * log(1 - x)])
     criterion_ce = nn.BCELoss()
     # criterion_ce = nn.CrossEntropyLoss()
+    # 优化器Adam
     optimizer = optim.Adam(net.parameters(), args['lr'], weight_decay=0.0005)
 
     dataset_train = RsDataset(train_src_t1, train_src_t2, train_label,
@@ -54,6 +65,7 @@ def main(args):
                             t1_transform=src_transform,
                             t2_transform=src_transform,
                             label_transform=label_transform)
+    # 数据加载器
     dataloader_train = DataLoader(dataset_train,
                                   batch_size=args['batch_size'],
                                   shuffle=True,
@@ -62,16 +74,23 @@ def main(args):
                                 batch_size=1,
                                 shuffle=False,
                                 num_workers=4)
-    num_dataset = len(dataloader_train.dataset)
+    # 训练集大小，源代码为num_dataset = len(dataloader_train.dataset)
+    num_dataset = len(dataset_train)
+    # 一轮训练迭代次数
     total_step = (num_dataset - 1) // dataloader_train.batch_size + 1
 
+    # 创建日志文件夹
     if not os.path.exists('logs'):
         os.makedirs('logs')
+    # 创建日志生成器
     logger = get_logger('logs/' + TITLE + '.log')
+    # 写入日志
     logger.info('Net: ' + TITLE)
     logger.info('Batch Size: {}'.format(args['batch_size']))
     logger.info('Learning Rate: {}'.format(args['lr']))
+    # 检查点保存路径
     ckp_savepath = 'ckps/' + TITLE
+    # 创建检查点保存文件夹
     if not os.path.exists(ckp_savepath):
         os.makedirs(ckp_savepath)
 
