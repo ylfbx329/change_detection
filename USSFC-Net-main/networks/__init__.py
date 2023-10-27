@@ -1,3 +1,3 @@
-from .modules import *
+from .USSFCNet import *
 
-__all__ = ["CMConv", "MSDConv", "MSDConv_SSFC", "SSFC"]
+__all__ = ["USSFCNet"]

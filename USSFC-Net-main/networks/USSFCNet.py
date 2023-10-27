@@ -3,8 +3,7 @@ import torch
 from tensorboardX import SummaryWriter
 from thop import profile
 from torchsummary import summary
-
-from modules.MSDConv_SSFC import MSDConv_SSFC
+from .modules import MSDConv_SSFC
 
 
 class First_DoubleConv(nn.Module):

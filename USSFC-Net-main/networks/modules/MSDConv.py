@@ -1,7 +1,7 @@
 import math
 import torch
 from torch import nn
-from . import CMConv
+from .CMConv import CMConv
 
 
 class MSDConv(nn.Module):
