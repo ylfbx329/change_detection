@@ -12,7 +12,7 @@ from dataset import RsDataset
 from utils import get_logger
 from networks import USSFCNet
 
-TITLE = 'USSFCNet_LEVIRCD'
+TITLE = 'USSFCNet_CDD'
 
 # 创建日志写入器
 writer_train = SummaryWriter('runs/' + TITLE + '/train')
@@ -99,8 +99,8 @@ def main(args):
         print('=' * 10)
         epoch += 1
         epoch_loss_train, pre_train, recall_train, f1_train, iou_train, kc_train = train(net, dataloader_train,
-                                                                                         total_step, criterion_ce
-                                                                                         , optimizer)
+                                                                                         total_step, criterion_ce,
+                                                                                         optimizer)
         print('epoch %d - train loss:%f, train Pre:%f, train Rec:%f, train F1:%f, train iou:%f, train kc:%f' % (
             epoch, epoch_loss_train / total_step, pre_train, recall_train, f1_train, iou_train, kc_train))
         logger.info(
@@ -116,10 +116,7 @@ def main(args):
         if f1_val > best_f1:
             best_f1 = f1_val
             best_epoch = epoch
-            ckp_name = TITLE + '_batch={}_lr={}_epoch{}model.pth'.format(
-                args['batch_size'],
-                args['lr'],
-                epoch)
+            ckp_name = TITLE + '_batch={}_lr={}_epoch{}model.pth'.format(args['batch_size'], args['lr'], epoch)
             torch.save(net.state_dict(), os.path.join(ckp_savepath, ckp_name), _use_new_zipfile_serialization=False)
 
         print('epoch %d - val Pre:%f val Recall:%f val F1Score:%f' % (epoch, pre_val, recall_val, f1_val))
