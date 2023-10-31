@@ -14,10 +14,24 @@ device_ids = [0, 1]
 
 
 def train(net, dataloader_train, total_step, criterion_ce, optimizer):
+    """
+
+
+    :param net:
+    :param dataloader_train:
+    :param total_step:
+    :param criterion_ce:
+    :param optimizer:
+    :return:
+    """
     print('Training...')
+    # 切换训练模式
     model = net.train()
+    #
     num = 0
+    #
     epoch_loss = 0
+    # 混淆矩阵
     cm_total = np.zeros((2, 2))
 
     for x1, x2, y in dataloader_train:

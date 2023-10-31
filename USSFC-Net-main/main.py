@@ -76,7 +76,7 @@ def main(args):
                                 num_workers=4)
     # 训练集大小，源代码为num_dataset = len(dataloader_train.dataset)
     num_dataset = len(dataset_train)
-    # 一轮训练迭代次数
+    # 一轮训练迭代次数，数据集长度 / batch_size
     total_step = (num_dataset - 1) // dataloader_train.batch_size + 1
 
     # 创建日志文件夹
@@ -94,10 +94,14 @@ def main(args):
     if not os.path.exists(ckp_savepath):
         os.makedirs(ckp_savepath)
 
+    # 开始循环训练和验证
     for epoch in range(start_epoch, total_epochs):
+        # 输出第几轮标识
         print('Epoch {}/{}'.format(epoch + 1, total_epochs))
         print('=' * 10)
+        # 轮次更新
         epoch += 1
+        # 训练函数
         epoch_loss_train, pre_train, recall_train, f1_train, iou_train, kc_train = train(net, dataloader_train,
                                                                                          total_step, criterion_ce,
                                                                                          optimizer)
